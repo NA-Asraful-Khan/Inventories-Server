@@ -69,6 +69,20 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/myProducts/:id', async(req,res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const product = await myProducts.findOne(query);
+            res.send(product);
+        })
+
+        app.delete('/myProducts/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await myProducts.deleteOne(query);
+            res.send(result);
+        })
+
         app.get('/myProducts', async(req,res) =>{
             const query = {};
             const cursor = myProducts.find(query);

@@ -21,15 +21,6 @@ async function run() {
     try {
         await client.connect();
         const collection = client.db("Inventory").collection("products");
-        // const product = {
-        //     picture: "https://i.ibb.co/ZVZvwKD/4runner-SR5-Premium.png",
-        //     quantity: 32,
-        //     carName: "4runner-SR5 Premium",
-        //     company: "Toyota",
-        //     price: "41,515",
-        //     description: "Blind Spot Monitor - SofTex®-trimmed  - Heated side mirrors with turn signal indicator\r\n"
-        // }
-
 
         // const result = await collection.insertOne(product);
         app.get('/product', async(req,res) =>{
@@ -37,6 +28,13 @@ async function run() {
             const cursor = collection.find(query);
             const products = await cursor.toArray();
             res.send(products);
+        })
+
+        app.get('/product/:id', async(req,res) =>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const product = await collection.findOne(query);
+            res.send(product);
         })
         
         //post product
@@ -47,6 +45,20 @@ async function run() {
             res.send({result});
         })
 
+        //update product
+        app.put('/product/:id', async(req,res)=>{
+            const id = req.params.id;
+            const updatedProduct = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options={upsert: true};
+            const updatedDoc={
+                $set:{
+                    quantity: updatedProduct.quantity
+                }
+            }
+            const result = await collection.updateOne(filter,updatedDoc,options);
+            res.send(result);
+        })
         // delet product
 
         app.delete('/product/:id', async(req,res)=>{

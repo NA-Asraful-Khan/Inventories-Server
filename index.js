@@ -21,6 +21,7 @@ async function run() {
     try {
         await client.connect();
         const collection = client.db("Inventory").collection("products");
+        const myProducts = client.db("Inventory").collection("myProducts");
 
         // const result = await collection.insertOne(product);
         app.get('/product', async(req,res) =>{
@@ -66,6 +67,21 @@ async function run() {
             const query = {_id: ObjectId(id)};
             const result = await collection.deleteOne(query);
             res.send(result);
+        })
+
+        app.get('/myProducts', async(req,res) =>{
+            const query = {};
+            const cursor = myProducts.find(query);
+            const products = await cursor.toArray();
+            res.send(products);
+        })
+
+
+        app.post('/myProducts',async (req,res)=>{
+            const newProduct = req.body;
+            console.log('adding new user', newProduct);
+            const result = await myProducts.insertOne(newProduct);
+            res.send({result});
         })
     } finally {
         //close later
